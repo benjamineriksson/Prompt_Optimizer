@@ -3,11 +3,10 @@
  * Handles UI interactions and API communication for the standalone web app
  */
 
-class LyraWebApp {
+class PromptOptimizerWebApp {
     constructor() {
-        // REPLACE THIS URL with your production backend URL
-        // Example: this.apiUrl = 'https://your-app-name.railway.app';
-        this.apiUrl = 'http://localhost:8000'; // UPDATE THIS AFTER DEPLOYMENT
+        // Production backend URL on Railway
+        this.apiUrl = 'https://promptoptimizer-production.up.railway.app';
         this.isOptimizing = false;
         
         this.initializeElements();
@@ -474,7 +473,7 @@ class LyraWebApp {
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new LyraWebApp();
+    new PromptOptimizerWebApp();
 });
 
 // Handle browser back/forward navigation
