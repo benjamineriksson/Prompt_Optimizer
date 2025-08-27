@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Lyra Prompt Optimizer Setup Script
+# Prompt Optimizer Setup Script
 # This script sets up the development environment and runs basic tests
 
 set -e  # Exit on any error
 
-echo "🚀 Setting up Lyra Prompt Optimizer..."
+echo "🚀 Setting up Prompt Optimizer..."
 
 # Check if Python is installed
 if ! command -v python3 &> /dev/null; then
@@ -14,8 +14,8 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # Check if we're in the right directory
-if [ ! -f "README.md" ] || [ ! -d "backend" ]; then
-    echo "❌ Please run this script from the root directory of the Lyra project."
+if [ ! -f "README.md" ] || [ ! -f "app.py" ]; then
+    echo "❌ Please run this script from the root directory of the Prompt Optimizer project."
     exit 1
 fi
 
@@ -23,7 +23,6 @@ echo "✅ Python 3 found: $(python3 --version)"
 
 # Set up backend
 echo "📦 Setting up backend..."
-cd backend
 
 # Create virtual environment if it doesn't exist
 if [ ! -d "venv" ]; then
@@ -45,7 +44,7 @@ if [ ! -f ".env" ]; then
     echo "📝 Creating .env file from template..."
     cp .env.example .env
     echo ""
-    echo "⚠️  IMPORTANT: Please edit backend/.env and add your DeepSeek API key!"
+    echo "⚠️  IMPORTANT: Please edit .env and add your DeepSeek API key!"
     echo "   DEEPSEEK_API_KEY=your_actual_api_key_here"
     echo ""
     read -p "Press Enter after you've added your API key to continue..."
@@ -73,16 +72,13 @@ from dotenv import load_dotenv
 load_dotenv()
 api_key = os.getenv('DEEPSEEK_API_KEY')
 if not api_key or api_key == 'your_deepseek_api_key_here':
-    print('❌ Please set your DeepSeek API key in backend/.env')
+    print('❌ Please set your DeepSeek API key in .env')
     exit(1)
 else:
     print('✅ API key found in environment')
 "
 
 echo "✅ Backend setup complete!"
-
-# Return to root directory
-cd ..
 
 # Test frontend files
 echo "🧪 Testing frontend files..."

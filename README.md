@@ -28,7 +28,6 @@ The Prompt Optimizer implements a proven 4-D methodology for prompt enhancement:
 
 ### Backend Setup
 ```bash
-cd backend
 pip install -r requirements.txt
 export DEEPSEEK_API_KEY="your_api_key_here"
 python app.py
@@ -47,11 +46,12 @@ python app.py
 
 ```
 Prompt_Optimizer/
-├── backend/
-│   ├── app.py              # Flask server
-│   ├── optimizer.py        # Core optimization logic
-│   ├── requirements.txt    # Python dependencies
-│   └── config.py          # Configuration settings
+├── app.py                  # Flask server
+├── optimizer.py            # Core optimization logic
+├── requirements.txt        # Python dependencies
+├── config.py              # Configuration settings
+├── Procfile               # Railway/Heroku deployment
+├── railway.toml           # Railway configuration
 ├── frontend/
 │   ├── extension/         # Browser extension
 │   │   ├── manifest.json
@@ -69,7 +69,7 @@ Prompt_Optimizer/
 
 ## Configuration
 
-Create a `.env` file in the backend directory:
+Create a `.env` file in the root directory:
 ```
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
 FLASK_ENV=development

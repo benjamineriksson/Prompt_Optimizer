@@ -22,9 +22,6 @@ Follow the prompts to configure your API key and test the installation.
 ### 1. Backend Setup
 
 ```bash
-# Navigate to backend directory
-cd backend
-
 # Create virtual environment
 python -m venv venv
 
