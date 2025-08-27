@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyra Prompt Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="logo"></span>
+                Prompt Optimizer
+            </h1>
+            <p class="subtitle">4-D Methodology</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="form-group">
+                <label for="rawPrompt" class="label">Your Prompt:</label>
+                <textarea 
+                    id="rawPrompt" 
+                    class="textarea" 
+                    placeholder="Enter your raw prompt here..."
+                    rows="4"
+                    maxlength="5000"
+                ></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span>/5000
+                </div>
+            </div>
+
+            <div class="options-grid">
+                <div class="form-group">
+                    <label class="label">Optimization Style:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="promptStyle" value="BASIC" checked>
+                            <span class="radio-custom"></span>
+                            <div class="radio-content">
+                                <strong>BASIC</strong>
+                                <small>Quick fix, core techniques</small>
+                            </div>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="promptStyle" value="DETAIL">
+                            <span class="radio-custom"></span>
+                            <div class="radio-content">
+                                <strong>DETAIL</strong>
+                                <small>Comprehensive analysis</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAI" class="label">Target AI:</label>
+                    <select id="targetAI" class="select">
+                        <option value="ChatGPT">ChatGPT</option>
+                        <option value="Claude">Claude</option>
+                        <option value="Gemini">Gemini</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="optimizeBtn" class="btn btn-primary">
+                <span class="btn-text">Optimize Prompt</span>
+                <span class="btn-loader" style="display: none;">
+                    <div class="spinner"></div>
+                    Optimizing...
+                </span>
+            </button>
+        </section>
+
+        <!-- Output Section -->
+        <section class="output-section" id="outputSection" style="display: none;">
+            <h3 class="section-title">✨ Optimized Result</h3>
+            
+            <div class="result-content">
+                <div class="optimized-prompt">
+                    <h4>Your Optimized Prompt:</h4>
+                    <div id="optimizedPrompt" class="prompt-text"></div>
+                    <button id="copyBtn" class="btn btn-secondary btn-small">
+                        📋 Copy
+                    </button>
+                </div>
+
+                <div class="improvements" id="improvements" style="display: none;">
+                    <h4>Key Improvements:</h4>
+                    <ul id="improvementsList"></ul>
+                </div>
+
+                <div class="techniques" id="techniques" style="display: none;">
+                    <h4>Techniques Applied:</h4>
+                    <div id="techniquesList"></div>
+                </div>
+
+                <div class="pro-tip" id="proTip" style="display: none;">
+                    <h4>💡 Pro Tip:</h4>
+                    <p id="proTipText"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section class="error-section" id="errorSection" style="display: none;">
+            <div class="error-content">
+                <h3>⚠️ Error</h3>
+                <p id="errorMessage"></p>
+                <button id="retryBtn" class="btn btn-secondary">Try Again</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Ready</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

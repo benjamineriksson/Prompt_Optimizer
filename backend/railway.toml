@@ -1,0 +1,12 @@
+# Railway Configuration for Lyra Backend
+# This file is automatically detected by Railway
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn app:app"
+
+[env]
+# Environment variables will be set in Railway dashboard
+PORT = "8000"

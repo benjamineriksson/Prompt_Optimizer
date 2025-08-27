@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyra Prompt Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-icon">✨</span>
+                    <span class="logo-text">Lyra Prompt Optimizer</span>
+                </div>
+                <div class="nav-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Initializing...</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- Hero Section -->
+                <section class="hero">
+                    <h1 class="hero-title">Transform Your Prompts with AI</h1>
+                    <p class="hero-subtitle">
+                        Apply Lyra's proven 4-D methodology to optimize prompts for any AI platform.
+                        Get better results with structured, targeted prompts.
+                    </p>
+                </section>
+
+                <!-- Input Form -->
+                <section class="form-section">
+                    <div class="form-container">
+                        <h2 class="section-title">
+                            <span class="title-icon">📝</span>
+                            Input Your Prompt
+                        </h2>
+
+                        <div class="form-group">
+                            <label for="rawPrompt" class="label">Your Raw Prompt</label>
+                            <textarea 
+                                id="rawPrompt" 
+                                class="textarea" 
+                                placeholder="Enter your prompt here... For example: 'Write a marketing email for my new product'"
+                                rows="6"
+                                maxlength="5000"
+                            ></textarea>
+                            <div class="char-counter">
+                                <span id="charCount">0</span>/5000 characters
+                            </div>
+                        </div>
+
+                        <div class="options-container">
+                            <div class="option-group">
+                                <label class="label">Optimization Style</label>
+                                <div class="radio-grid">
+                                    <label class="radio-card">
+                                        <input type="radio" name="promptStyle" value="BASIC" checked>
+                                        <div class="radio-content">
+                                            <div class="radio-header">
+                                                <span class="radio-title">⚡ BASIC</span>
+                                                <span class="radio-badge">Fast</span>
+                                            </div>
+                                            <p class="radio-description">
+                                                Quick optimization with core techniques. Perfect for simple prompts that need immediate improvement.
+                                            </p>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="radio-card">
+                                        <input type="radio" name="promptStyle" value="DETAIL">
+                                        <div class="radio-content">
+                                            <div class="radio-header">
+                                                <span class="radio-title">🔍 DETAIL</span>
+                                                <span class="radio-badge">Comprehensive</span>
+                                            </div>
+                                            <p class="radio-description">
+                                                In-depth analysis with clarifying questions. Best for complex prompts requiring thorough optimization.
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="option-group">
+                                <label for="targetAI" class="label">Target AI Platform</label>
+                                <select id="targetAI" class="select">
+                                    <option value="ChatGPT">🤖 ChatGPT (OpenAI)</option>
+                                    <option value="Claude">🧠 Claude (Anthropic)</option>
+                                    <option value="Gemini">💎 Gemini (Google)</option>
+                                    <option value="Other">🔧 Other AI Platform</option>
+                                </select>
+                                <p class="help-text">
+                                    Select your target AI to receive platform-specific optimizations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button id="optimizeBtn" class="btn btn-primary btn-large">
+                            <span class="btn-content">
+                                <span class="btn-icon">✨</span>
+                                <span class="btn-text">Optimize My Prompt</span>
+                            </span>
+                            <span class="btn-loader" style="display: none;">
+                                <div class="spinner"></div>
+                                <span>Processing with Lyra's 4-D Methodology...</span>
+                            </span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section class="results-section" id="resultsSection" style="display: none;">
+                    <div class="results-container">
+                        <h2 class="section-title">
+                            <span class="title-icon">✨</span>
+                            Optimized Result
+                        </h2>
+
+                        <div class="result-card main-result">
+                            <div class="result-header">
+                                <h3>Your Optimized Prompt</h3>
+                                <div class="result-actions">
+                                    <button id="copyBtn" class="btn btn-secondary btn-small">
+                                        <span class="btn-icon">📋</span>
+                                        Copy
+                                    </button>
+                                    <button id="newOptimizationBtn" class="btn btn-outline btn-small">
+                                        <span class="btn-icon">🔄</span>
+                                        New Optimization
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="prompt-display">
+                                <div id="optimizedPrompt" class="prompt-text"></div>
+                            </div>
+                        </div>
+
+                        <div class="insights-grid">
+                            <div class="insight-card" id="improvementsCard" style="display: none;">
+                                <h4 class="insight-title">
+                                    <span class="insight-icon">🚀</span>
+                                    Key Improvements
+                                </h4>
+                                <ul id="improvementsList" class="improvements-list"></ul>
+                            </div>
+
+                            <div class="insight-card" id="techniquesCard" style="display: none;">
+                                <h4 class="insight-title">
+                                    <span class="insight-icon">🛠️</span>
+                                    Techniques Applied
+                                </h4>
+                                <div id="techniquesList" class="techniques-content"></div>
+                            </div>
+
+                            <div class="insight-card pro-tip-card" id="proTipCard" style="display: none;">
+                                <h4 class="insight-title">
+                                    <span class="insight-icon">💡</span>
+                                    Pro Tip
+                                </h4>
+                                <p id="proTipText" class="pro-tip-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Error Section -->
+                <section class="error-section" id="errorSection" style="display: none;">
+                    <div class="error-container">
+                        <div class="error-content">
+                            <div class="error-icon">⚠️</div>
+                            <h3 class="error-title">Optimization Failed</h3>
+                            <p id="errorMessage" class="error-message"></p>
+                            <div class="error-actions">
+                                <button id="retryBtn" class="btn btn-primary">
+                                    <span class="btn-icon">🔄</span>
+                                    Try Again
+                                </button>
+                                <button id="resetBtn" class="btn btn-outline">
+                                    <span class="btn-icon">📝</span>
+                                    Start Over
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Lyra</h4>
+                    <p>Powered by the 4-D Methodology: Deconstruct, Diagnose, Develop, Deliver</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Methodology</h4>
+                    <ul>
+                        <li>Role assignment & context layering</li>
+                        <li>Chain-of-thought reasoning</li>
+                        <li>Multi-perspective analysis</li>
+                        <li>Constraint optimization</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Powered By</h4>
+                    <p>DeepSeek AI • Advanced Language Processing</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Lyra Prompt Optimizer. Built with ❤️ for better AI interactions.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
