@@ -19,6 +19,13 @@ class PromptOptimizerExtension {
         this.rawPromptEl = document.getElementById('rawPrompt');
         this.targetAIEl = document.getElementById('targetAI');
         this.optimizeBtnEl = document.getElementById('optimizeBtn');
+        
+        // Clarification elements
+        this.clarificationSectionEl = document.getElementById('clarificationSection');
+        this.questionsContentEl = document.getElementById('questionsContent');
+        this.clarificationTextEl = document.getElementById('clarificationText');
+        this.submitClarificationEl = document.getElementById('submitClarification');
+        this.skipClarificationEl = document.getElementById('skipClarification');
         this.btnTextEl = this.optimizeBtnEl.querySelector('.btn-text');
         this.btnLoaderEl = this.optimizeBtnEl.querySelector('.btn-loader');
         
@@ -53,6 +60,10 @@ class PromptOptimizerExtension {
 
         // Optimize button
         this.optimizeBtnEl.addEventListener('click', () => this.optimizePrompt());
+
+        // Clarification buttons
+        this.submitClarificationEl.addEventListener('click', () => this.submitClarification());
+        this.skipClarificationEl.addEventListener('click', () => this.skipClarification());
 
         // Copy button
         this.copyBtnEl.addEventListener('click', () => this.copyToClipboard());
@@ -125,7 +136,7 @@ class PromptOptimizerExtension {
         this.statusDotEl.className = `status-dot ${type}`;
     }
 
-    async optimizePrompt() {
+    async optimizePrompt(clarifications = null) {
         if (this.isOptimizing || !this.validateInput()) return;
 
         try {
@@ -133,6 +144,7 @@ class PromptOptimizerExtension {
             this.setLoadingState(true);
             this.hideOutput();
             this.hideError();
+            this.hideClarification();
             this.setStatus('loading', 'Optimizing...');
 
             // Collect form data
@@ -143,24 +155,39 @@ class PromptOptimizerExtension {
             // Save form data
             this.saveFormData({ rawPrompt, promptStyle, targetAI });
 
+            // Build request payload
+            const payload = {
+                raw_prompt: rawPrompt,
+                prompt_style: promptStyle,
+                target_ai: targetAI
+            };
+
+            // Add clarifications if provided
+            if (clarifications) {
+                payload.clarifications = clarifications;
+            }
+
             // Make API request
             const response = await fetch(`${this.apiUrl}/optimize`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    raw_prompt: rawPrompt,
-                    prompt_style: promptStyle,
-                    target_ai: targetAI
-                })
+                body: JSON.stringify(payload)
             });
 
             const data = await response.json();
 
             if (response.ok && !data.error) {
-                this.displayResult(data);
-                this.setStatus('ready', 'Optimization complete');
+                // Check if we need clarification (DETAIL mode stage 1)
+                if (data.needs_clarification) {
+                    this.showClarification(data.questions);
+                    this.setStatus('ready', 'Please answer questions');
+                } else {
+                    // Final result
+                    this.displayResult(data);
+                    this.setStatus('ready', 'Optimization complete');
+                }
             } else {
                 throw new Error(data.message || 'Optimization failed');
             }
@@ -307,6 +334,36 @@ class PromptOptimizerExtension {
         } catch (error) {
             console.error('Failed to load saved data:', error);
         }
+    }
+
+    showClarification(questions) {
+        this.questionsContentEl.innerHTML = `<div class="questions-text">${questions.replace(/\n/g, '<br>')}</div>`;
+        this.clarificationSectionEl.style.display = 'block';
+        this.clarificationTextEl.value = '';
+        this.clarificationTextEl.focus();
+    }
+
+    hideClarification() {
+        this.clarificationSectionEl.style.display = 'none';
+    }
+
+    async submitClarification() {
+        const clarifications = this.clarificationTextEl.value.trim();
+        if (!clarifications) {
+            this.showError('Please provide answers to the questions above.');
+            return;
+        }
+
+        this.hideClarification();
+        await this.optimizePrompt(clarifications);
+    }
+
+    async skipClarification() {
+        this.hideClarification();
+        // Change to BASIC mode and re-optimize
+        const basicRadio = document.querySelector('input[name="promptStyle"][value="BASIC"]');
+        if (basicRadio) basicRadio.checked = true;
+        await this.optimizePrompt();
     }
 }
 

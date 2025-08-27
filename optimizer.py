@@ -84,7 +84,7 @@ For Complex Requests:
 **Pro Tip:** [Usage guidance]
 """
 
-    def optimize_prompt(self, raw_prompt: str, prompt_style: str, target_ai: str) -> Dict:
+    def optimize_prompt(self, raw_prompt: str, prompt_style: str, target_ai: str, clarifications: Optional[str] = None) -> Dict:
         """
         Optimize a prompt using the 4-D methodology via DeepSeek API
         
@@ -92,12 +92,17 @@ For Complex Requests:
             raw_prompt: The user's original prompt
             prompt_style: "BASIC" or "DETAIL"
             target_ai: "ChatGPT", "Claude", "Gemini", or "Other"
+            clarifications: Additional context from user (for DETAIL mode stage 2)
             
         Returns:
-            Dict containing optimized prompt and metadata
+            Dict containing optimized prompt and metadata, or clarifying questions
         """
         try:
-            # Construct the DeepSeek API payload
+            # For DETAIL mode without clarifications, first ask questions
+            if prompt_style == "DETAIL" and clarifications is None:
+                return self._get_clarifying_questions(raw_prompt, target_ai)
+            
+            # For BASIC mode or DETAIL with clarifications, proceed with optimization
             messages = [
                 {
                     "role": "system",
@@ -105,7 +110,7 @@ For Complex Requests:
                 },
                 {
                     "role": "user",
-                    "content": self._build_user_message(raw_prompt, prompt_style, target_ai)
+                    "content": self._build_user_message(raw_prompt, prompt_style, target_ai, clarifications)
                 }
             ]
             
@@ -128,23 +133,105 @@ For Complex Requests:
             
         except Exception as e:
             return {
-                "error": True,
-                "message": f"Optimization failed: {str(e)}",
-                "optimized_prompt": None
+                "error": str(e),
+                "optimized_prompt": None,
+                "improvements": [],
+                "techniques_applied": [],
+                "pro_tip": ""
             }
+
+    def _get_clarifying_questions(self, raw_prompt: str, target_ai: str) -> Dict:
+        """Get clarifying questions for DETAIL mode optimization"""
+        try:
+            question_system_prompt = """
+You are an expert prompt optimization consultant. Your job is to analyze a user's prompt and ask 2-3 targeted clarifying questions to gather essential context for optimization.
+
+ANALYSIS PROCESS:
+1. DECONSTRUCT the prompt to identify gaps
+2. DIAGNOSE what information is missing
+3. ASK 2-3 specific questions that will improve the optimization
+
+QUESTION GUIDELINES:
+- Focus on PURPOSE, CONTEXT, CONSTRAINTS, or OUTPUT FORMAT
+- Be specific and actionable
+- Avoid generic questions
+- Prioritize the most impactful clarifications
+
+RESPONSE FORMAT:
+**Analysis:** [Brief assessment of what's unclear or missing]
+
+**Questions:**
+1. [Specific question about purpose/context]
+2. [Specific question about constraints/requirements]  
+3. [Specific question about output/format] (if needed)
+
+Keep it concise but insightful.
+"""
+
+            messages = [
+                {
+                    "role": "system", 
+                    "content": question_system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": f"""
+Please analyze this prompt and ask clarifying questions for optimization targeting {target_ai}:
+
+Raw Prompt: {raw_prompt}
+
+Target AI: {target_ai}
+
+What 2-3 questions would help me optimize this prompt most effectively?
+"""
+                }
+            ]
+
+            payload = {
+                "model": self.config.DEFAULT_MODEL,
+                "messages": messages,
+                "temperature": 0.6,
+                "max_tokens": 800,
+                "stream": False
+            }
+
+            response = self._call_deepseek_api(payload)
+            response_content = response['choices'][0]['message']['content']
+
+            return {
+                "needs_clarification": True,
+                "questions": response_content,
+                "optimized_prompt": None,
+                "improvements": [],
+                "techniques_applied": [],
+                "pro_tip": "Please answer the questions above to get a comprehensive optimization."
+            }
+
+        except Exception as e:
+            # Fallback to basic optimization if questions fail
+            return self.optimize_prompt(raw_prompt, "BASIC", target_ai)
     
-    def _build_user_message(self, raw_prompt: str, prompt_style: str, target_ai: str) -> str:
+    def _build_user_message(self, raw_prompt: str, prompt_style: str, target_ai: str, clarifications: Optional[str] = None) -> str:
         """Build the user message for the DeepSeek API call"""
-        return f"""
+        base_message = f"""
 Please optimize the following prompt using the {prompt_style} mode approach, targeting {target_ai}:
 
 Raw Prompt: {raw_prompt}
 
 Optimization Style: {prompt_style}
-Target AI: {target_ai}
+Target AI: {target_ai}"""
 
-Apply your 4-D methodology and provide the response in the appropriate format based on the complexity of the request.
-"""
+        if clarifications:
+            base_message += f"""
+
+Additional Context from User:
+{clarifications}"""
+
+        base_message += """
+
+Apply your 4-D methodology and provide the response in the appropriate format based on the complexity of the request."""
+        
+        return base_message
     
     def _call_deepseek_api(self, payload: Dict) -> Dict:
         """Make the actual API call to DeepSeek"""

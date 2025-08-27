@@ -120,9 +120,11 @@ def optimize_prompt():
             }), 400
         
         # Validate field values
-        raw_prompt = data["raw_prompt"].strip()
-        prompt_style = data["prompt_style"].upper()
-        target_ai = data["target_ai"]
+        # Extract required fields
+        raw_prompt = data.get('raw_prompt', '').strip()
+        prompt_style = data.get('prompt_style', 'BASIC').upper()
+        target_ai = data.get('target_ai', 'ChatGPT')
+        clarifications = data.get('clarifications', '').strip() or None
         
         if not raw_prompt:
             return jsonify({
@@ -145,8 +147,8 @@ def optimize_prompt():
         # Log the optimization request
         logger.info(f"Optimization request from {client_ip}: style={prompt_style}, target={target_ai}")
         
-        # Perform optimization
-        result = optimizer.optimize_prompt(raw_prompt, prompt_style, target_ai)
+        # Perform optimization (may return questions for DETAIL mode)
+        result = optimizer.optimize_prompt(raw_prompt, prompt_style, target_ai, clarifications)
         
         if result.get("error"):
             logger.error(f"Optimization failed: {result.get('message')}")

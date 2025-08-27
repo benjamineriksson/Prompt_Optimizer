@@ -73,6 +73,31 @@
             </button>
         </section>
 
+        <!-- Clarification Section (for DETAIL mode) -->
+        <section class="clarification-section" id="clarificationSection" style="display: none;">
+            <h3 class="section-title">❓ Clarifying Questions</h3>
+            
+            <div class="questions-content" id="questionsContent"></div>
+            
+            <div class="clarification-input">
+                <label for="clarificationText">Your Answers:</label>
+                <textarea 
+                    id="clarificationText" 
+                    placeholder="Please answer the questions above to help optimize your prompt..."
+                    rows="4"
+                ></textarea>
+            </div>
+
+            <div class="clarification-actions">
+                <button id="submitClarification" class="btn btn-primary">
+                    Continue Optimization
+                </button>
+                <button id="skipClarification" class="btn btn-secondary">
+                    Skip & Use Basic Mode
+                </button>
+            </div>
+        </section>
+
         <!-- Output Section -->
         <section class="output-section" id="outputSection" style="display: none;">
             <h3 class="section-title">✨ Optimized Result</h3>
