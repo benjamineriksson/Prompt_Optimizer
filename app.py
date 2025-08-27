@@ -1,11 +1,5 @@
 """
-Prompt Optimizer Flask# Initialize optimizer
-try:
-    optimizer = PromptOptimizer()
-    app.logger.info("Prompt Optimizer initialized successfully")
-except Exception as e:
-    app.logger.error(f"Failed to initialize Prompt Optimizer: {str(e)}")
-    optimizer = Noned
+Prompt Optimizer Flask Backend
 Main application server providing API endpoints for prompt optimization
 """
 from flask import Flask, request, jsonify
@@ -30,13 +24,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize Lyra Optimizer
+# Initialize optimizer
 try:
-    lyra = LyraOptimizer()
-    logger.info("Lyra Optimizer initialized successfully")
+    optimizer = PromptOptimizer()
+    logger.info("Prompt Optimizer initialized successfully")
 except Exception as e:
-    logger.error(f"Failed to initialize Lyra Optimizer: {e}")
-    lyra = None
+    logger.error(f"Failed to initialize Prompt Optimizer: {e}")
+    optimizer = None
 
 # Rate limiting storage (simple in-memory for demo)
 request_counts = {}
