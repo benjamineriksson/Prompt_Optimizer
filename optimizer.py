@@ -8,18 +8,15 @@ from openai import OpenAI
 import logging
 from datetime import datetime
 import os
+import json
+import requests
+from typing import Dict, List, Optional
 from config import Config
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 class PromptOptimizer:
-import json
-import requests
-from typing import Dict, List, Optional
-from config import Config
-
-class LyraOptimizer:
     def __init__(self):
         self.config = Config()
         self.config.validate_config()
