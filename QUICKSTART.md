@@ -1,6 +1,6 @@
-# Quick Start Guide - Lyra Prompt Optimizer
+# 🚀 Prompt Optimizer - Quick Start Guide
 
-Get your Lyra Prompt Optimizer up and running in 5 minutes!
+Get your Prompt Optimizer running in minutes!
 
 ## Prerequisites
 

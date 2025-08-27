@@ -1,8 +1,8 @@
-# Lyra Prompt Optimizer - Complete Implementation Guide
+# Prompt Optimizer - Complete Implementation Guide
 
 ## 🏗️ Architectural Overview
 
-The Lyra Prompt Optimizer is built as a modular system with clear separation between frontend interfaces and backend processing. Here's the complete architecture:
+The Prompt Optimizer is built as a modular system with clear separation between frontend interfaces and backend processing. Here's the complete architecture:
 
 ### System Architecture
 

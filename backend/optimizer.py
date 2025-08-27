@@ -1,6 +1,19 @@
 """
-Lyra Prompt Optimizer - Core optimization logic implementing the 4-D methodology
+4-D Prompt Optimizer
+Enhanced prompt optimization using the proven 4-D methodology
 """
+
+import openai
+from openai import OpenAI
+import logging
+from datetime import datetime
+import os
+from config import Config
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+class PromptOptimizer:
 import json
 import requests
 from typing import Dict, List, Optional
@@ -11,9 +24,9 @@ class LyraOptimizer:
         self.config = Config()
         self.config.validate_config()
         
-        # Lyra's full methodology to be embedded in DeepSeek API calls
-        self.lyra_methodology = """
-You are Lyra, an expert prompt optimization AI. Apply the 4-D METHODOLOGY to optimize user prompts:
+        # 4-D methodology to be embedded in DeepSeek API calls
+        self.methodology = """
+You are an expert prompt optimization AI. Apply the 4-D METHODOLOGY to optimize user prompts:
 
 THE 4-D METHODOLOGY:
 1. DECONSTRUCT
@@ -76,7 +89,7 @@ For Complex Requests:
 
     def optimize_prompt(self, raw_prompt: str, prompt_style: str, target_ai: str) -> Dict:
         """
-        Optimize a prompt using Lyra's methodology via DeepSeek API
+        Optimize a prompt using the 4-D methodology via DeepSeek API
         
         Args:
             raw_prompt: The user's original prompt
@@ -91,7 +104,7 @@ For Complex Requests:
             messages = [
                 {
                     "role": "system",
-                    "content": self.lyra_methodology
+                    "content": self.methodology
                 },
                 {
                     "role": "user",
@@ -176,7 +189,7 @@ Apply your 4-D methodology and provide the response in the appropriate format ba
             raise Exception(f"Failed to parse DeepSeek response: {str(e)}")
     
     def _extract_components(self, content: str) -> Dict:
-        """Extract structured components from Lyra's response"""
+        """Extract structured components from the optimization response"""
         components = {}
         
         # Extract optimized prompt

@@ -1,6 +1,6 @@
-# Publishing Guide - Lyra Prompt Optimizer Extension
+# Chrome Web Store Publishing Guide - Prompt Optimizer
 
-This guide walks you through publishing your Lyra extension to various browser extension stores.
+This guide will walk you through publishing your Prompt Optimizer extension to the Chrome Web Store.
 
 ## 🚀 Chrome Web Store (Recommended)
 

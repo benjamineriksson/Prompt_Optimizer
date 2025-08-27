@@ -1,6 +1,8 @@
-# Lyra Prompt Optimizer
+# Prompt Optimizer
 
-A self-contained addon that optimizes prompts using Lyra's 4-D methodology via the DeepSeek API.
+A self-contained prompt optimization addon that uses the 4-D methodology to enhance prompts for AI interactions.
+
+The Prompt Optimizer implements a proven 4-D methodology for prompt enhancement:
 
 ## Features
 
@@ -15,7 +17,7 @@ A self-contained addon that optimizes prompts using Lyra's 4-D methodology via t
 ### Backend (Python Flask)
 - RESTful API endpoints
 - DeepSeek API integration
-- Lyra methodology implementation
+- 4-D methodology implementation
 - Secure API key management
 
 ### Frontend Options
@@ -44,10 +46,10 @@ python app.py
 ## Project Structure
 
 ```
-LYRA/
+Prompt_Optimizer/
 ├── backend/
 │   ├── app.py              # Flask server
-│   ├── lyra_optimizer.py   # Core optimization logic
+│   ├── optimizer.py        # Core optimization logic
 │   ├── requirements.txt    # Python dependencies
 │   └── config.py          # Configuration settings
 ├── frontend/
@@ -77,7 +79,7 @@ CORS_ORIGINS=*
 ## API Endpoints
 
 ### POST /optimize
-Optimizes a prompt using Lyra's methodology.
+Optimizes a prompt using the 4-D methodology.
 
 **Request Body:**
 ```json

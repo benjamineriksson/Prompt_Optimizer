@@ -1,5 +1,11 @@
 """
-Lyra Prompt Optimizer Flask Backend
+Prompt Optimizer Flask# Initialize optimizer
+try:
+    optimizer = PromptOptimizer()
+    app.logger.info("Prompt Optimizer initialized successfully")
+except Exception as e:
+    app.logger.error(f"Failed to initialize Prompt Optimizer: {str(e)}")
+    optimizer = Noned
 Main application server providing API endpoints for prompt optimization
 """
 from flask import Flask, request, jsonify
@@ -9,7 +15,7 @@ from datetime import datetime
 import os
 
 from config import Config
-from lyra_optimizer import LyraOptimizer
+from optimizer import PromptOptimizer
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -60,7 +66,7 @@ def check_rate_limit(client_ip: str) -> bool:
 def home():
     """Health check endpoint"""
     return jsonify({
-        "service": "Lyra Prompt Optimizer",
+        "service": "Prompt Optimizer",
         "status": "running",
         "version": "1.0.0",
         "timestamp": datetime.now().isoformat()
@@ -69,13 +75,13 @@ def home():
 @app.route('/health', methods=['GET'])
 def health():
     """Comprehensive health check including DeepSeek API"""
-    if not lyra:
+    if not optimizer:
+        logger.error("Optimizer validation endpoint called but optimizer not initialized")
         return jsonify({
-            "status": "unhealthy",
-            "error": "Lyra Optimizer not initialized"
-        }), 500
-    
-    health_status = lyra.health_check()
+            "error": "Prompt Optimizer not initialized"
+        }), 503
+
+    health_status = optimizer.health_check()
     status_code = 200 if health_status["status"] == "healthy" else 500
     
     return jsonify(health_status), status_code
@@ -92,8 +98,8 @@ def optimize_prompt():
             "message": "Rate limit exceeded. Please try again later."
         }), 429
     
-    # Validate Lyra is initialized
-    if not lyra:
+    # Validate optimizer is initialized
+    if not optimizer:
         return jsonify({
             "error": True,
             "message": "Service temporarily unavailable"
@@ -146,7 +152,7 @@ def optimize_prompt():
         logger.info(f"Optimization request from {client_ip}: style={prompt_style}, target={target_ai}")
         
         # Perform optimization
-        result = lyra.optimize_prompt(raw_prompt, prompt_style, target_ai)
+        result = optimizer.optimize_prompt(raw_prompt, prompt_style, target_ai)
         
         if result.get("error"):
             logger.error(f"Optimization failed: {result.get('message')}")
@@ -218,5 +224,5 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
     debug = Config.FLASK_ENV == 'development'
     
-    logger.info(f"Starting Lyra Prompt Optimizer on port {port}")
+    logger.info(f"Starting Prompt Optimizer on port {port}")
     app.run(host='0.0.0.0', port=port, debug=debug)
