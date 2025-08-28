@@ -100,9 +100,12 @@ For Complex Requests:
         try:
             # For DETAIL mode without clarifications, first ask questions
             if prompt_style == "DETAIL" and clarifications is None:
+                logger.info("DETAIL mode: Getting clarifying questions")
                 return self._get_clarifying_questions(raw_prompt, target_ai)
             
             # For BASIC mode or DETAIL with clarifications, proceed with optimization
+            logger.info(f"Optimizing prompt: style={prompt_style}, has_clarifications={clarifications is not None}")
+            
             messages = [
                 {
                     "role": "system",
@@ -132,12 +135,13 @@ For Complex Requests:
             return self._parse_response(response)
             
         except Exception as e:
+            logger.error(f"Optimization failed: {str(e)}")
             return {
                 "error": str(e),
                 "optimized_prompt": None,
                 "improvements": [],
                 "techniques_applied": [],
-                "pro_tip": ""
+                "pro_tip": "Try again or switch to BASIC mode if the issue persists."
             }
 
     def _get_clarifying_questions(self, raw_prompt: str, target_ai: str) -> Dict:
@@ -158,9 +162,9 @@ QUESTION GUIDELINES:
 - Prioritize the most impactful clarifications
 
 RESPONSE FORMAT:
-**Analysis:** [Brief assessment of what's unclear or missing]
+Analysis: [Brief assessment of what's unclear or missing]
 
-**Questions:**
+Questions:
 1. [Specific question about purpose/context]
 2. [Specific question about constraints/requirements]  
 3. [Specific question about output/format] (if needed)
@@ -209,7 +213,14 @@ What 2-3 questions would help me optimize this prompt most effectively?
 
         except Exception as e:
             # Fallback to basic optimization if questions fail
-            return self.optimize_prompt(raw_prompt, "BASIC", target_ai)
+            logger.error(f"Failed to get clarifying questions: {str(e)}")
+            return {
+                "error": False,
+                "optimized_prompt": "Unable to get clarifying questions. Please try BASIC mode instead.",
+                "improvements": ["Please switch to BASIC mode for immediate optimization"],
+                "techniques_applied": [],
+                "pro_tip": "If you're experiencing issues with DETAIL mode, try BASIC mode for faster results."
+            }
     
     def _build_user_message(self, raw_prompt: str, prompt_style: str, target_ai: str, clarifications: Optional[str] = None) -> str:
         """Build the user message for the DeepSeek API call"""
@@ -244,7 +255,7 @@ Apply your 4-D methodology and provide the response in the appropriate format ba
             self.config.DEEPSEEK_API_URL,
             headers=headers,
             json=payload,
-            timeout=60
+            timeout=25  # Reduced timeout to prevent Railway timeout
         )
         
         if response.status_code != 200:
