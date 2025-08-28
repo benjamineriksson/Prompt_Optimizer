@@ -120,16 +120,20 @@ For Complex Requests:
             # Select model based on complexity
             model = self.config.REASONING_MODEL if prompt_style == "DETAIL" else self.config.DEFAULT_MODEL
             
+            # Reduce token count for faster processing, especially with clarifications
+            max_tokens = 1500 if clarifications else 2000
+            
             payload = {
                 "model": model,
                 "messages": messages,
                 "temperature": 0.7,
-                "max_tokens": 2000,
+                "max_tokens": max_tokens,
                 "stream": False
             }
             
-            # Make API call to DeepSeek
-            response = self._call_deepseek_api(payload)
+            # Make API call to DeepSeek with longer timeout for clarification stage
+            is_clarification_stage = clarifications is not None
+            response = self._call_deepseek_api(payload, is_clarification_stage)
             
             # Parse and format the response
             return self._parse_response(response)
@@ -148,28 +152,22 @@ For Complex Requests:
         """Get clarifying questions for DETAIL mode optimization"""
         try:
             question_system_prompt = """
-You are an expert prompt optimization consultant. Your job is to analyze a user's prompt and ask 2-3 targeted clarifying questions to gather essential context for optimization.
+You are an expert prompt consultant. Analyze the user's prompt and ask 2-3 specific clarifying questions.
 
-ANALYSIS PROCESS:
-1. DECONSTRUCT the prompt to identify gaps
-2. DIAGNOSE what information is missing
-3. ASK 2-3 specific questions that will improve the optimization
+FOCUS ON:
+- Purpose/Goal
+- Context/Audience  
+- Output Requirements
 
-QUESTION GUIDELINES:
-- Focus on PURPOSE, CONTEXT, CONSTRAINTS, or OUTPUT FORMAT
-- Be specific and actionable
-- Avoid generic questions
-- Prioritize the most impactful clarifications
-
-RESPONSE FORMAT:
-Analysis: [Brief assessment of what's unclear or missing]
+FORMAT:
+Analysis: [Brief assessment]
 
 Questions:
-1. [Specific question about purpose/context]
-2. [Specific question about constraints/requirements]  
-3. [Specific question about output/format] (if needed)
+1. [Question about purpose/goal]
+2. [Question about context/audience]
+3. [Question about output format] (if needed)
 
-Keep it concise but insightful.
+Keep it concise and specific.
 """
 
             messages = [
@@ -192,14 +190,14 @@ What 2-3 questions would help me optimize this prompt most effectively?
             ]
 
             payload = {
-                "model": self.config.DEFAULT_MODEL,
+                "model": self.config.DEFAULT_MODEL,  # Use faster model for questions
                 "messages": messages,
                 "temperature": 0.6,
-                "max_tokens": 800,
+                "max_tokens": 400,  # Reduced tokens for faster response
                 "stream": False
             }
 
-            response = self._call_deepseek_api(payload)
+            response = self._call_deepseek_api(payload, False)  # Questions are simpler, use shorter timeout
             response_content = response['choices'][0]['message']['content']
 
             return {
@@ -244,18 +242,21 @@ Apply your 4-D methodology and provide the response in the appropriate format ba
         
         return base_message
     
-    def _call_deepseek_api(self, payload: Dict) -> Dict:
+    def _call_deepseek_api(self, payload: Dict, is_clarification_stage: bool = False) -> Dict:
         """Make the actual API call to DeepSeek"""
         headers = {
             "Authorization": f"Bearer {self.config.DEEPSEEK_API_KEY}",
             "Content-Type": "application/json"
         }
         
+        # Use longer timeout for clarification optimization, shorter for questions
+        timeout = 35 if is_clarification_stage else 20
+        
         response = requests.post(
             self.config.DEEPSEEK_API_URL,
             headers=headers,
             json=payload,
-            timeout=25  # Reduced timeout to prevent Railway timeout
+            timeout=timeout
         )
         
         if response.status_code != 200:
